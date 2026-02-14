@@ -1,0 +1,6 @@
+# Go binaries
+receiver/ocap-receiver
+receiver/ocap-reforger-receiver
+
+# Fallback export files
+receiver/fallback_*.json.gz

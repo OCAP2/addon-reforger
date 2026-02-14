@@ -1,0 +1,13 @@
+{
+  "guid": "OCAP-Reforger-MVP",
+  "type": "addon",
+  "name": "OCAP Reforger",
+  "description": "Operation Capture and Playback for Arma Reforger",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "type": "game",
+      "name": "ArmaReforger"
+    }
+  ]
+}
