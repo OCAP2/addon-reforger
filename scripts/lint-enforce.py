@@ -53,9 +53,9 @@ def check_gproj():
         return
 
     try:
-        data = json.loads(gproj.read_text())
-    except json.JSONDecodeError as e:
-        error(f"addon.gproj: invalid JSON — {e}")
+        data = json.loads(gproj.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, IOError) as e:
+        error(f"addon.gproj: failed to read or parse — {e}")
         return
 
     for field in GPROJ_REQUIRED_FIELDS:
@@ -72,7 +72,7 @@ def check_file_structure():
 
 def check_brace_balance(filepath):
     """Check that braces are balanced, ignoring strings and comments."""
-    text = filepath.read_text()
+    text = filepath.read_text(encoding="utf-8")
     depth = 0
     in_string = False
     in_line_comment = False
@@ -125,7 +125,7 @@ def check_brace_balance(filepath):
 
 def check_trailing_whitespace(filepath):
     """Check for trailing whitespace on non-empty lines."""
-    lines = filepath.read_text().splitlines()
+    lines = filepath.read_text(encoding="utf-8").splitlines()
     flagged = []
     for i, line in enumerate(lines, 1):
         if line and line != line.rstrip():
@@ -143,7 +143,7 @@ def check_escape_json(filepath):
     Looks for patterns like:  \\"" + variable + "\\""
     where variable does not pass through OCAP_Util.EscapeJson().
     """
-    lines = filepath.read_text().splitlines()
+    lines = filepath.read_text(encoding="utf-8").splitlines()
 
     for i, line in enumerate(lines, 1):
         # Only inspect lines that build json/body strings
