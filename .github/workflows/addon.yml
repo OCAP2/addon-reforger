@@ -2,6 +2,7 @@ name: Addon CI
 
 on:
   push:
+    branches: [main]
     paths:
       - "addon/**"
       - ".github/workflows/addon.yml"
