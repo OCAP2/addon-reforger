@@ -31,16 +31,41 @@ The addon captures game state every tick and streams JSON batches to the receive
 - Go 1.23+ (for building the receiver)
 - [OCAP2 Web Server](https://github.com/OCAP2/web) (for playback)
 
-## Setup
+## Building
 
-### 1. Receiver
+### Addon
+
+The addon has no build step. Enforce Script `.c` files are loaded directly by the Arma Reforger engine at runtime — there is no ahead-of-time compilation.
+
+### Receiver (Go 1.23+)
 
 ```bash
 cd receiver
 go build -o ocap-receiver .
 ```
 
-Configure via environment variables:
+## Quick Start
+
+Three things need to run together: the **OCAP2 web server** (for playback), the **receiver** (collects data from the game), and the **addon** (runs inside Arma Reforger). Here's how to set them up from scratch.
+
+### Step 1: Set up the OCAP2 web server
+
+Follow the instructions at [OCAP2/web](https://github.com/OCAP2/web) to get the web frontend running. Note the URL it's running on (e.g. `http://your-server:5000`) and the API secret you configured — you'll need both in the next step.
+
+### Step 2: Build and start the receiver
+
+```bash
+cd receiver
+go build -o ocap-receiver .
+```
+
+Start it, pointing at your web server:
+
+```bash
+OCAP_WEB_URL=http://your-server:5000 OCAP_API_SECRET=your-secret ./ocap-receiver
+```
+
+The receiver listens on port `8080` by default. It will accept data from the game and, when a mission ends, package it up and upload it to the web server for playback.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -49,15 +74,15 @@ Configure via environment variables:
 | `OCAP_API_SECRET` | _(empty)_ | Secret for OCAP2 web uploads |
 | `SESSION_TIMEOUT` | `30m` | Auto-export stale sessions after this duration |
 
-```bash
-OCAP_WEB_URL=http://your-ocap-server:5000 OCAP_API_SECRET=your-secret ./ocap-receiver
-```
+### Step 3: Install the addon on your Reforger server
 
-### 2. Addon
-
-Place the `addon/` folder in your Reforger server's mod directory. Add the `OCAP_GameModeComponent` to your scenario's game mode entity in the Enfusion Workbench.
-
-Component settings (configurable in editor):
+1. Copy the `addon/` folder into your Arma Reforger dedicated server's mod directory
+2. Open your scenario in **Enfusion Workbench**
+3. Find your scenario's **GameMode** entity (e.g. `SCR_BaseGameMode`)
+4. Click **Add Component** and select `OCAP_GameModeComponent`
+5. In the component's properties, set the **Receiver URL** to the address where the receiver is running (e.g. `http://your-server:8080`)
+6. Adjust any other settings as needed (see table below)
+7. Save the scenario and start your server
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -67,6 +92,10 @@ Component settings (configurable in editor):
 | Auto Start | `true` | Start recording when player threshold is met |
 | Min Player Count | `1` | Players required for auto-start |
 | Tag | _(empty)_ | Mission tag (e.g. TvT, COOP) |
+
+### Step 4: Play and review
+
+Once players join and the minimum player threshold is reached, recording starts automatically. When the mission ends (or all players leave), the receiver exports the data to the web server. Open the OCAP2 web frontend in your browser to replay the mission.
 
 ## What Gets Captured
 
