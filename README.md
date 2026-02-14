@@ -54,12 +54,7 @@ Follow the instructions at [OCAP2/web](https://github.com/OCAP2/web) to get the 
 
 ### Step 2: Build and start the receiver
 
-```bash
-cd receiver
-go build -o ocap-receiver .
-```
-
-Start it, pointing at your web server:
+Build the receiver by following the instructions in the [Building](#building) section, then start it pointing at your web server:
 
 ```bash
 OCAP_WEB_URL=http://your-server:5000 OCAP_API_SECRET=your-secret ./ocap-receiver
