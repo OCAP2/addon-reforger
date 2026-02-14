@@ -1,0 +1,22 @@
+name: Addon CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "addon/**"
+      - ".github/workflows/addon.yml"
+  pull_request:
+    paths:
+      - "addon/**"
+      - ".github/workflows/addon.yml"
+
+jobs:
+  validate:
+    name: Validate addon project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate addon.gproj is valid JSON
+        run: python3 -m json.tool addon/addon.gproj > /dev/null
