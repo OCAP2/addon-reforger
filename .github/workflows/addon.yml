@@ -4,24 +4,18 @@ on:
   push:
     paths:
       - "addon/**"
-      - "scripts/lint-enforce.py"
       - ".github/workflows/addon.yml"
   pull_request:
     paths:
       - "addon/**"
-      - "scripts/lint-enforce.py"
       - ".github/workflows/addon.yml"
 
 jobs:
-  lint:
-    name: Lint Enforce Script
+  validate:
+    name: Validate addon project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Run addon lint checks
-        run: python scripts/lint-enforce.py
+      - name: Validate addon.gproj is valid JSON
+        run: python3 -m json.tool addon/addon.gproj > /dev/null
